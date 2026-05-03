@@ -3,10 +3,12 @@ services:
     name: stock-management-backend
     env: java
     plan: free
-    buildCommand: "mvn clean package -DskipTests"
-    startCommand: "java -jar target/stock-management-backend-1.0.0.jar"
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/stock-management-backend-1.0.0.jar --spring.profiles.active=prod"
     envVars:
       - key: JAVA_VERSION
         value: 17
       - key: SPRING_PROFILES_ACTIVE
         value: prod
+      - key: DATABASE_URL
+        value: postgres://stock_management_lfag_user:6FbXid8U6JsR2QD5j4vV4pf8qk8lZgh7@dpg-d7rdscugkk3c738iaa00-a:5432/stock_management_lfag
