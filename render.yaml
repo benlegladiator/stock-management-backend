@@ -1,10 +1,7 @@
+# Configuration du Web Service pour le backend Spring Boot - Runtime natif Render
 services:
-  # Configuration du Web Service pour le backend Spring Boot
   - type: web
     name: stock-management-backend
-    env: docker
+    env: node
     buildCommand: mvn clean package -DskipTests
     startCommand: java -jar target/stock-management-backend-1.0.0.jar --spring.profiles.active=prod
-
-# Forcer l'environnement Docker pour Render
-runtime: docker
