@@ -1,0 +1,14 @@
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\model\Produit.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\repository\CategorieRepository.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\controller\CategorieController.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\repository\ProduitRepository.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\repository\MouvementStockRepository.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\StockManagementApplication.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\controller\ProduitController.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\controller\DashboardController.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\model\Categorie.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\controller\DataInitController.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\config\SecurityConfig.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\controller\MouvementStockController.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\model\MouvementStock.java
+C:\Users\PC\Desktop\projet_java\stock-management-backend\src\main\java\com\stockmanagement\config\CorsConfig.java
