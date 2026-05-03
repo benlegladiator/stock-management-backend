@@ -1,7 +1,0 @@
-# Configuration du Web Service pour le backend Spring Boot - Runtime natif Render
-services:
-  - type: web
-    name: stock-management-backend
-    env: node
-    buildCommand: npm run build
-    startCommand: npm start
