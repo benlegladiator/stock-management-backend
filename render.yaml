@@ -3,5 +3,5 @@ services:
   - type: web
     name: stock-management-backend
     env: node
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/stock-management-backend-1.0.0.jar --spring.profiles.active=prod
+    buildCommand: npm run build
+    startCommand: npm start
