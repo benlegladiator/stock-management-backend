@@ -5,7 +5,7 @@ COPY . .
 RUN ./mvnw clean package -DskipTests
 
 # Étape 2 : Runtime avec OpenJDK 17
-FROM eclipse-temurin:17-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/stock-management-backend-1.0.0.jar app.jar
 EXPOSE 8080
