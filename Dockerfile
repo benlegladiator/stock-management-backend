@@ -2,7 +2,7 @@
 FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
 # Étape 2 : Runtime avec OpenJDK 17
 FROM eclipse-temurin:17-jre-alpine
