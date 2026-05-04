@@ -1,6 +1,5 @@
 package com.stockmanagement.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -14,7 +13,6 @@ public class MouvementStock {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produit_id", nullable = false)
-    @JsonManagedReference("produit-mouvements")
     private Produit produit;
 
     @NotNull(message = "Le type de mouvement est obligatoire")

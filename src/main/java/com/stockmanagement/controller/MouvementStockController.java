@@ -6,6 +6,7 @@ import com.stockmanagement.repository.MouvementStockRepository;
 import com.stockmanagement.repository.ProduitRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,16 +27,7 @@ public class MouvementStockController {
 
     @GetMapping
     public List<MouvementStock> getAllMouvements() {
-        try {
-            System.out.println("DEBUG: getAllMouvements called");
-            List<MouvementStock> mouvements = mouvementRepository.findAll();
-            System.out.println("DEBUG: Found " + mouvements.size() + " mouvements");
-            return mouvements;
-        } catch (Exception e) {
-            System.out.println("ERROR in getAllMouvements: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        return mouvementRepository.findAll();
     }
 
     @GetMapping("/{id}")
@@ -47,34 +39,17 @@ public class MouvementStockController {
 
     @PostMapping
     public ResponseEntity<MouvementStock> createMouvement(@Valid @RequestBody MouvementStock mouvement) {
-        try {
-            // Vérifier si le produit existe
-            if (mouvement.getProduit() == null || mouvement.getProduit().getId() == null) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            if (!produitRepository.existsById(mouvement.getProduit().getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            // Récupérer le produit complet
-            mouvement.setProduit(produitRepository.findById(mouvement.getProduit().getId()).orElse(null));
-            
-            // Définir la date si non fournie
-            if (mouvement.getDateMouvement() == null) {
-                mouvement.setDateMouvement(LocalDateTime.now());
-            }
-            
-            MouvementStock savedMouvement = mouvementRepository.save(mouvement);
-            
-            // Mettre à jour le stock du produit
-            updateProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedMouvement);
-            
-        } catch (Exception e) {
+        if (!produitRepository.existsById(mouvement.getProduit().getId())) {
             return ResponseEntity.badRequest().build();
         }
+
+        mouvement.setProduit(produitRepository.findById(mouvement.getProduit().getId()).orElse(null));
+        
+        MouvementStock savedMouvement = mouvementRepository.save(mouvement);
+        
+        updateProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedMouvement);
     }
 
     @PutMapping("/{id}")
@@ -88,28 +63,20 @@ public class MouvementStockController {
             return ResponseEntity.badRequest().build();
         }
 
-        try {
-            MouvementStock mouvement = optionalMouvement.get();
-            
-            // Annuler l'ancien mouvement
-            revertProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
-            
-            // Mettre à jour le mouvement
-            mouvement.setProduit(produitRepository.findById(mouvementDetails.getProduit().getId()).orElse(null));
-            mouvement.setTypeMouvement(mouvementDetails.getTypeMouvement());
-            mouvement.setQuantite(mouvementDetails.getQuantite());
-            mouvement.setDescription(mouvementDetails.getDescription());
+        MouvementStock mouvement = optionalMouvement.get();
+        
+        revertProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
+        
+        mouvement.setProduit(produitRepository.findById(mouvementDetails.getProduit().getId()).orElse(null));
+        mouvement.setTypeMouvement(mouvementDetails.getTypeMouvement());
+        mouvement.setQuantite(mouvementDetails.getQuantite());
+        mouvement.setDescription(mouvementDetails.getDescription());
 
-            MouvementStock updatedMouvement = mouvementRepository.save(mouvement);
-            
-            // Appliquer le nouveau mouvement
-            updateProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
-            
-            return ResponseEntity.ok(updatedMouvement);
-            
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        MouvementStock updatedMouvement = mouvementRepository.save(mouvement);
+        
+        updateProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
+        
+        return ResponseEntity.ok(updatedMouvement);
     }
 
     @DeleteMapping("/{id}")
@@ -119,23 +86,51 @@ public class MouvementStockController {
             return ResponseEntity.notFound().build();
         }
 
-        try {
-            MouvementStock mouvement = optionalMouvement.get();
-            
-            // Annuler l'effet du mouvement sur le stock
-            revertProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
-            
-            mouvementRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-            
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        MouvementStock mouvement = optionalMouvement.get();
+        revertProductStock(mouvement.getProduit().getId(), mouvement.getTypeMouvement(), mouvement.getQuantite());
+        
+        mouvementRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/produit/{produitId}")
     public List<MouvementStock> getMouvementsByProduit(@PathVariable Long produitId) {
         return mouvementRepository.findByProduitId(produitId);
+    }
+
+    @GetMapping("/type/{typeMouvement}")
+    public List<MouvementStock> getMouvementsByType(@PathVariable TypeMouvement typeMouvement) {
+        return mouvementRepository.findByTypeMouvement(typeMouvement);
+    }
+
+    @GetMapping("/period")
+    public List<MouvementStock> getMouvementsByPeriod(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin) {
+        return mouvementRepository.findByDateMouvementBetween(debut, fin);
+    }
+
+    @GetMapping("/recent")
+    public List<MouvementStock> getRecentMouvements(@RequestParam(defaultValue = "7") Integer days) {
+        LocalDateTime debut = LocalDateTime.now().minusDays(days);
+        return mouvementRepository.findRecentMouvements(debut);
+    }
+
+    @GetMapping("/stats/count-by-type")
+    public ResponseEntity<Long> getCountByTypeAndPeriod(
+            @RequestParam TypeMouvement typeMouvement,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin) {
+        long count = mouvementRepository.countByTypeAndPeriod(typeMouvement, debut, fin);
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/stats/top-products")
+    public List<Object[]> getTopProductsByMovement(
+            @RequestParam TypeMouvement typeMouvement,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin) {
+        return mouvementRepository.getTopProductsByMovement(typeMouvement, debut, fin);
     }
 
     private void updateProductStock(Long produitId, TypeMouvement typeMouvement, Integer quantite) {
