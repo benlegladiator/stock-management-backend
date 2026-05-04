@@ -26,7 +26,16 @@ public class MouvementStockController {
 
     @GetMapping
     public List<MouvementStock> getAllMouvements() {
-        return mouvementRepository.findAll();
+        try {
+            System.out.println("DEBUG: getAllMouvements called");
+            List<MouvementStock> mouvements = mouvementRepository.findAll();
+            System.out.println("DEBUG: Found " + mouvements.size() + " mouvements");
+            return mouvements;
+        } catch (Exception e) {
+            System.out.println("ERROR in getAllMouvements: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping("/{id}")
