@@ -14,7 +14,7 @@ public class MouvementStock {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produit_id", nullable = false)
-    @JsonManagedReference
+    @JsonManagedReference("produit-mouvements")
     private Produit produit;
 
     @NotNull(message = "Le type de mouvement est obligatoire")

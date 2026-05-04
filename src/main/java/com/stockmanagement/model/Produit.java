@@ -46,7 +46,7 @@ public class Produit {
     private LocalDateTime dateModification;
 
     @OneToMany(mappedBy = "produit", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("produit-mouvements")
     private List<MouvementStock> mouvements;
 
     // Constructeurs
