@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "produit")
@@ -43,6 +44,10 @@ public class Produit {
     
     @Column(name = "date_modification")
     private LocalDateTime dateModification;
+
+    @OneToMany(mappedBy = "produit", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<MouvementStock> mouvements;
 
     // Constructeurs
     public Produit() {
@@ -127,6 +132,14 @@ public class Produit {
 
     public void setDateModification(LocalDateTime dateModification) {
         this.dateModification = dateModification;
+    }
+
+    public List<MouvementStock> getMouvements() {
+        return mouvements;
+    }
+
+    public void setMouvements(List<MouvementStock> mouvements) {
+        this.mouvements = mouvements;
     }
 
     @PreUpdate
